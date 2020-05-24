@@ -20,12 +20,16 @@ package com.yaap.device.DeviceSettings;
 import android.content.res.Resources;
 import android.util.Log;
 
+import android.os.RemoteException;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
+
+import vendor.oneplus.hardware.display.V1_0.IOneplusDisplay;
 
 public class Utils {
 
@@ -127,6 +131,18 @@ public class Utils {
             return defaultValue;
         } else {
             return res.getString(resId);
+        }
+    }
+
+    public static void setDisplayMode(int mode, int enabled) {
+        IOneplusDisplay displayDaemon = null;
+        try {
+            displayDaemon = IOneplusDisplay.getService();
+        } catch (Exception e) {}
+        if (displayDaemon != null) {
+            try {
+                displayDaemon.setMode(mode, enabled);
+            } catch (RemoteException e) {}
         }
     }
 }

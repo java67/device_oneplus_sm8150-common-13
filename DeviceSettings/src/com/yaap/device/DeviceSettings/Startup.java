@@ -54,13 +54,27 @@ public class Startup extends BroadcastReceiver {
         TouchscreenGestureSettings.MainSettingsFragment.restoreTouchscreenGestureStates(context);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_SRGB_SWITCH, false);
-        restore(SRGBModeSwitch.getFile(), enabled);
+        if (enabled) {
+            Utils.setDisplayMode(16, 0);
+            Utils.setDisplayMode(17, 0);
+            Utils.setDisplayMode(18, 0);
+            Utils.setDisplayMode(20, 0);
+            Utils.setDisplayMode(21, 0);
+            Utils.setDisplayMode(18, 1);
+        }
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_HBM_SWITCH, false);
         restore(HBMModeSwitch.getFile(), enabled);
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_DC_SWITCH, false);
         restore(DCModeSwitch.getFile(), enabled);
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_DCI_SWITCH, false);
-        restore(DCIModeSwitch.getFile(), enabled);
+        if (enabled) {
+            Utils.setDisplayMode(16, 0);
+            Utils.setDisplayMode(17, 0);
+            Utils.setDisplayMode(18, 0);
+            Utils.setDisplayMode(20, 0);
+            Utils.setDisplayMode(21, 0);
+            Utils.setDisplayMode(16, 1);
+        }
         enabled = sharedPrefs.getBoolean(DeviceSettings.KEY_FPS_INFO, false);
         if (enabled) {
             context.startService(new Intent(context, FPSInfoService.class));
