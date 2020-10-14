@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/_system_properties.h>
 #include <sys/system_properties.h>
 
@@ -55,8 +57,43 @@ void property_override_multi(char const system_prop[], char const vendor_prop[],
     property_override(bootimage_prop, value);
 }
 
+/* From Magisk@jni/magiskhide/hide_utils.c */
+static const char *snet_prop_key[] = {
+    "ro.boot.verifiedbootstate",
+    "ro.boot.selinux",
+    "ro.debuggable",
+    "ro.secure",
+    "ro.build.type",
+    "ro.build.tags",
+    NULL
+};
+
+static const char *snet_prop_value[] = {
+    "green",
+    "enforcing",
+    "0",
+    "1",
+    "user",
+    "release-keys",
+    NULL
+};
+
+static void workaround_snet_properties() {
+
+    // Hide all sensitive props
+    for (int i = 0; snet_prop_key[i]; ++i) {
+        property_override(snet_prop_key[i], snet_prop_value[i]);
+    }
+
+    chmod("/sys/fs/selinux/enforce", 0640);
+    chmod("/sys/fs/selinux/policy", 0440);
+}
+
 void vendor_load_properties() {
   // fingerprint
   property_override("ro.build.description", "coral-user 11 RP1A.201005.004 6782484 release-keys");
   property_override_multi("ro.build.fingerprint", "ro.vendor.build.fingerprint","ro.bootimage.build.fingerprint", "google/coral/coral:11/RP1A.201005.004/6782484:user/release-keys");
+
+  // Workaround SafetyNet
+  workaround_snet_properties();
 }
